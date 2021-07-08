@@ -1,2 +1,2 @@
 # lycosa
-A Task scheduling system.
+My Task scheduling system.
