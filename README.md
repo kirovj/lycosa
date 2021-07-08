@@ -1,2 +1,2 @@
 # lycosa
-A crawler web platform by gin &amp; rod.
+A Task scheduling system.
