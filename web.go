@@ -1,4 +1,4 @@
-package web
+package lycosa
 
 import (
 	"net/http"
