@@ -42,7 +42,7 @@ func NewTaskFromBytes(bs []byte) *Task {
 }
 
 func (t *Task) String() string {
-	return fmt.Sprintf("Task{name: %s, scheduling: %s, command: %s}", t.Name, t.Scheduling, t.Command)
+	return fmt.Sprintf("Task{valid: %t, name: %s, scheduling: %s, command: %s}", t.Valid, t.Name, t.Scheduling, t.Command)
 }
 
 func LoadTask() {
