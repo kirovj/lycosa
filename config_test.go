@@ -6,6 +6,6 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	Init()
+	init()
 	fmt.Println(Conf.User, Conf.Pass)
 }

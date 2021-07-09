@@ -10,8 +10,9 @@ import (
 )
 
 type Config struct {
-	User string
-	Pass string
+	User     string
+	Pass     string
+	TaskFile string
 }
 
 var Conf = &Config{}
@@ -22,7 +23,7 @@ func setField(v reflect.Value, kvStr string) {
 	field.SetString(kv[1])
 }
 
-func Init() {
+func LoadConfig() {
 	var (
 		file   *os.File
 		line   []byte

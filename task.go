@@ -11,16 +11,15 @@ import (
 )
 
 var (
-	Tasks    []*Task
-	TaskFile = "Task"
-	lock     = new(sync.RWMutex)
+	Tasks []*Task
+	lock  = new(sync.RWMutex)
 )
 
 type Task struct {
-	Valid      bool   // is task valid
-	Name       string // task name
-	Scheduling string // scheduling: crontab-like
-	Command    string // task shell command
+	Valid      bool   `json:"valid"`      // is task valid
+	Name       string `json:"name"`       // task name
+	Scheduling string `json:"scheduling"` // scheduling: crontab-like
+	Command    string `json:"command"`    // task shell command
 }
 
 func NewTask(valid bool, name, scheduling, command string) *Task {
@@ -53,7 +52,7 @@ func LoadTask() {
 	)
 
 	lock.RLock()
-	if file, err = os.Open(TaskFile); err != nil {
+	if file, err = os.Open(Conf.TaskFile); err != nil {
 		fmt.Println(err)
 		return
 	}
