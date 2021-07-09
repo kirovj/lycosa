@@ -2,7 +2,6 @@ package lycosa
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -31,11 +30,11 @@ func NewTask(valid bool, name, scheduling, command string) *Task {
 	}
 }
 
-func NewDefaultTask(name, scheduling, command string) *Task {
+func defaultTask(name, scheduling, command string) *Task {
 	return NewTask(true, name, scheduling, command)
 }
 
-func NewTaskFromBytes(bs []byte) *Task {
+func newTaskFromBytes(bs []byte) *Task {
 	list := strings.Split(strings.Trim(string(bs), "\r"), "\t")
 	return NewTask(list[0] == "1", list[1], list[2], list[3])
 }
@@ -67,7 +66,7 @@ func LoadTask() {
 		bytes, _, err := reader.ReadLine()
 		if err == io.EOF {
 			if len(bytes) > 0 {
-				Tasks = append(Tasks, NewTaskFromBytes(bytes))
+				Tasks = append(Tasks, newTaskFromBytes(bytes))
 			}
 			break
 		}
@@ -75,22 +74,33 @@ func LoadTask() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		Tasks = append(Tasks, NewTaskFromBytes(bytes))
+		Tasks = append(Tasks, newTaskFromBytes(bytes))
 	}
 }
 
-func AddTask(task *Task) {
+func AddTask(name, scheduling, command string) {
 	lock.Lock()
-	Tasks = append(Tasks, task)
+	Tasks = append(Tasks, defaultTask(name, scheduling, command))
 	lock.Unlock()
 }
 
-func StopTask(name string) error {
+func changeTask(name, scheduling, command string) error {
 	for _, task := range Tasks {
 		if task.Name == name {
-			task.Valid = false
+			task.Scheduling = scheduling
+			task.Command = command
 			return nil
 		}
 	}
-	return errors.New("task not found: " + name)
+	return NotFound(name)
+}
+
+func changeTaskValid(name string) error {
+	for _, task := range Tasks {
+		if task.Name == name {
+			task.Valid = !task.Valid
+			return nil
+		}
+	}
+	return NotFound(name)
 }
