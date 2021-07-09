@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	BASH_WIN   = "C:\\Program Files\\Git\\git-bash.exe"
-	BASH_LINUX = "/usr/bin/bash"
+	BashWin   = "C:\\Program Files\\Git\\git-bash.exe"
+	BashLinux = "/usr/bin/bash"
 )
 
+// RunBash run bash cmd
 func RunBash(command string) {
-
 	var (
 		cmd  *exec.Cmd
 		out  []byte
@@ -22,13 +22,12 @@ func RunBash(command string) {
 
 	switch runtime.GOOS {
 	case "windows":
-		bash = BASH_WIN
+		bash = BashWin
 	case "linux":
-		bash = BASH_LINUX
+		bash = BashLinux
 	}
 
 	cmd = exec.Command(bash, "-c", command)
-
 	if out, err = cmd.CombinedOutput(); err != nil {
 		fmt.Println(err)
 		return

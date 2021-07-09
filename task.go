@@ -43,6 +43,8 @@ func (t *Task) String() string {
 	return fmt.Sprintf("Task{valid: %t, name: %s, scheduling: %s, command: %s}", t.Valid, t.Name, t.Scheduling, t.Command)
 }
 
+// LoadTask load tasks from task file
+// it only run once when service start
 func LoadTask() {
 	var (
 		file   *os.File
@@ -78,6 +80,7 @@ func LoadTask() {
 	}
 }
 
+// AddTask add task from web api and then save to task file
 func AddTask(name, scheduling, command string) {
 	go saveTask(true, defaultTask(name, scheduling, command))
 }
@@ -105,6 +108,8 @@ func ChangeTaskValid(name string) error {
 	return NotFound(name)
 }
 
+// saveTask save Tasks to task file
+// it is thread safe
 func saveTask(isAppend bool, task *Task) {
 	var (
 		file *os.File
@@ -126,18 +131,19 @@ func saveTask(isAppend bool, task *Task) {
 
 	if file, err = os.OpenFile(Conf.TaskFile, mode, 0666); err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	if isAppend {
 		Tasks = append(Tasks, task)
-		file.WriteString(fmt.Sprintf("1\t%s\t%s\t%s\n", task.Name, task.Scheduling, task.Command))
+		_, _ = file.WriteString(fmt.Sprintf("1\t%s\t%s\t%s\n", task.Name, task.Scheduling, task.Command))
 	} else {
 		for _, t := range Tasks {
 			var valid uint8
 			if t.Valid {
 				valid = 1
 			}
-			file.WriteString(fmt.Sprintf("%d\t%s\t%s\t%s\n", valid, t.Name, t.Scheduling, t.Command))
+			_, _ = file.WriteString(fmt.Sprintf("%d\t%s\t%s\t%s\n", valid, t.Name, t.Scheduling, t.Command))
 		}
 	}
 }

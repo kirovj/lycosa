@@ -23,6 +23,7 @@ func setField(v reflect.Value, kvStr string) {
 	field.SetString(kv[1])
 }
 
+// LoadConfig load config from file config
 func LoadConfig() {
 	var (
 		file   *os.File
@@ -34,6 +35,7 @@ func LoadConfig() {
 
 	if file, err = os.Open("config"); err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	reader = bufio.NewReader(file)
@@ -44,12 +46,12 @@ func LoadConfig() {
 			if len(line) > 0 {
 				setField(v, string(line))
 			}
-			break
+			return
 		}
 
 		if err != nil {
 			fmt.Println(err)
-			break
+			return
 		}
 		setField(v, string(line))
 	}
