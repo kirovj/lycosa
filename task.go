@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
+	"runtime"
 	"strings"
 	"sync"
 )
@@ -147,4 +149,29 @@ func saveTask(isAppend bool, task *Task) {
 			_, _ = file.WriteString(fmt.Sprintf("%d\t%s\t%s\t%s\n", valid, t.Name, t.Scheduling, t.Command))
 		}
 	}
+}
+
+// RunTask run bash cmd
+func RunTask(t *Task) {
+	var (
+		cmd  *exec.Cmd
+		out  []byte
+		err  error
+		bash string
+	)
+
+	switch runtime.GOOS {
+	case "windows":
+		bash = BashWin
+	case "linux":
+		bash = BashLinux
+	}
+
+	cmd = exec.Command(bash, "-c", t.Command)
+	if out, err = cmd.CombinedOutput(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(string(out))
 }

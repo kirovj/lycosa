@@ -10,8 +10,13 @@ func init() {
 	// load config from config
 	LoadConfig()
 
-	// load tasks from Task
+	// load tasks from Task and run
 	LoadTask()
+	for _, task := range Tasks {
+		if task.Valid {
+			RunTask(task)
+		}
+	}
 }
 
 func Start() {
