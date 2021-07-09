@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+const (
+	BashWin   = "C:\\Program Files\\Git\\git-bash.exe"
+	BashLinux = "/usr/bin/bash"
+	NotFound  = "Not Found: "
+)
+
 type Config struct {
 	User     string
 	Pass     string

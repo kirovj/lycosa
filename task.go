@@ -2,6 +2,7 @@ package lycosa
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -94,7 +95,7 @@ func ChangeTask(name, scheduling, command string) error {
 			return nil
 		}
 	}
-	return NotFound(name)
+	return errors.New(NotFound + name)
 }
 
 func ChangeTaskValid(name string) error {
@@ -105,7 +106,7 @@ func ChangeTaskValid(name string) error {
 			return nil
 		}
 	}
-	return NotFound(name)
+	return errors.New(NotFound + name)
 }
 
 // saveTask save Tasks to task file

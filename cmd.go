@@ -6,11 +6,6 @@ import (
 	"runtime"
 )
 
-const (
-	BashWin   = "C:\\Program Files\\Git\\git-bash.exe"
-	BashLinux = "/usr/bin/bash"
-)
-
 // RunBash run bash cmd
 func RunBash(command string) {
 	var (
