@@ -35,7 +35,7 @@ func Start() {
 
 	// api for change task valid, valid -> invalid, invalid -> valid
 	r.POST("/valid", func(c *gin.Context) {
-		err := changeTaskValid(c.PostForm("name"))
+		err := ChangeTaskValid(c.PostForm("name"))
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
@@ -45,7 +45,7 @@ func Start() {
 
 	// api for change task
 	r.POST("/change", func(c *gin.Context) {
-		err := changeTask(getTaskParams(c))
+		err := ChangeTask(getTaskParams(c))
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {

@@ -79,28 +79,65 @@ func LoadTask() {
 }
 
 func AddTask(name, scheduling, command string) {
-	lock.Lock()
-	Tasks = append(Tasks, defaultTask(name, scheduling, command))
-	lock.Unlock()
+	go saveTask(true, defaultTask(name, scheduling, command))
 }
 
-func changeTask(name, scheduling, command string) error {
+func ChangeTask(name, scheduling, command string) error {
 	for _, task := range Tasks {
 		if task.Name == name {
 			task.Scheduling = scheduling
 			task.Command = command
+			go saveTask(false, nil)
 			return nil
 		}
 	}
 	return NotFound(name)
 }
 
-func changeTaskValid(name string) error {
+func ChangeTaskValid(name string) error {
 	for _, task := range Tasks {
 		if task.Name == name {
 			task.Valid = !task.Valid
+			go saveTask(false, nil)
 			return nil
 		}
 	}
 	return NotFound(name)
+}
+
+func saveTask(isAppend bool, task *Task) {
+	var (
+		file *os.File
+		err  error
+		mode int
+	)
+
+	lock.Lock()
+	defer func() {
+		file.Close()
+		lock.Unlock()
+	}()
+
+	if isAppend {
+		mode = os.O_APPEND
+	} else {
+		mode = os.O_TRUNC | os.O_WRONLY
+	}
+
+	if file, err = os.OpenFile(Conf.TaskFile, mode, 0666); err != nil {
+		fmt.Println(err)
+	}
+
+	if isAppend {
+		Tasks = append(Tasks, task)
+		file.WriteString(fmt.Sprintf("1\t%s\t%s\t%s\n", task.Name, task.Scheduling, task.Command))
+	} else {
+		for _, t := range Tasks {
+			var valid uint8
+			if t.Valid {
+				valid = 1
+			}
+			file.WriteString(fmt.Sprintf("%d\t%s\t%s\t%s\n", valid, t.Name, t.Scheduling, t.Command))
+		}
+	}
 }
