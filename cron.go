@@ -6,19 +6,23 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func Run() {
-	c := cron.New()
-	_, err := c.AddFunc("*/5 * * * * *", print5)
-	if err != nil {
-		fmt.Println(err)
-	}
-	c.Start()
+func runCron() {
+	var (
+		c   *cron.Cron
+		err error
+	)
+	c = cron.New(cron.WithSeconds())
 	defer c.Stop()
+
+	for _, t := range Tasks {
+		if _, err = c.AddFunc(t.Scheduling, t.runTask); err != nil {
+			fmt.Println(err)
+			continue
+		}
+		fmt.Printf("task: %s start run with %s\n", t.Name, t.Scheduling)
+	}
+
+	c.Start()
 	select { /* select: to keep this running */
 	}
-}
-
-//执行函数
-func print5() {
-	fmt.Println("每5s执行一次cron")
 }

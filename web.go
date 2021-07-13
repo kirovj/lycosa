@@ -11,16 +11,14 @@ func init() {
 	// load config from config
 	loadConfig()
 
-	// Confirm bash by os
+	// confirm bash by os
 	confirmBash()
 
 	// load tasks from Task and run
 	loadTask()
-	for _, task := range Tasks {
-		if task.Valid {
-			runTask(task)
-		}
-	}
+
+	// cron run
+	runCron()
 }
 
 func Start() {

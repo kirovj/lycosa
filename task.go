@@ -151,18 +151,16 @@ func saveTask(isAppend bool, task *Task) {
 }
 
 // RunTask run bash cmd
-func runTask(t *Task) {
+func (t *Task) runTask() {
 	var (
 		cmd *exec.Cmd
-		out []byte
+		// out []byte
 		err error
 	)
 
 	cmd = exec.Command(Bash, "-c", t.Command)
-	if out, err = cmd.CombinedOutput(); err != nil {
+	if _, err = cmd.CombinedOutput(); err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	fmt.Println(string(out))
 }
