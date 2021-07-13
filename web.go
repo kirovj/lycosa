@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-basic/uuid"
 )
 
 // init prepare to start
@@ -18,29 +19,55 @@ func init() {
 	loadTask()
 
 	// cron run
-	runCron()
+	// go runCron()
 }
 
 func Start() {
 	r := gin.Default()
 
 	// api for all task
-	r.GET("/all", func(c *gin.Context) {
+	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, Tasks)
 	})
+
+	// api for login
+	r.POST("/login", func(c *gin.Context) {
+		user := c.PostForm("user")
+		pass := c.PostForm("pass")
+		if user == Conf.User && pass == Conf.Pass {
+			sessionId = uuid.New()
+			c.SetCookie("user", sessionId, 86400*7, "", "", true, true)
+			c.String(http.StatusOK, "login success")
+		} else {
+			c.String(http.StatusOK, "failed, check user or password!")
+		}
+	})
+
+	admin := r.Group("/admin")
+	admin.Use(onlyAdmin())
 
 	var getTaskParams = func(c *gin.Context) (string, string, string) {
 		return c.PostForm("name"), c.PostForm("scheduling"), c.PostForm("command")
 	}
 
-	// api for add task
-	r.POST("/add", func(c *gin.Context) {
+	admin.GET("/logout", func(c *gin.Context) {
+		sessionId = ""
+		c.SetCookie("user", "", 0, "", "", true, true)
+		c.String(http.StatusOK, "log out.")
+	})
+
+	admin.GET("/config", func(c *gin.Context) {
+		c.JSON(http.StatusOK, Conf)
+	})
+
+	// api for add task: /admin/add
+	admin.POST("/add", func(c *gin.Context) {
 		addTask(getTaskParams(c))
 		c.String(http.StatusOK, "add task success.")
 	})
 
 	// api for change task valid, valid -> invalid, invalid -> valid
-	r.POST("/valid", func(c *gin.Context) {
+	admin.POST("/valid", func(c *gin.Context) {
 		err := changeTaskValid(c.PostForm("name"))
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
@@ -50,17 +77,13 @@ func Start() {
 	})
 
 	// api for change task
-	r.POST("/change", func(c *gin.Context) {
+	admin.POST("/change", func(c *gin.Context) {
 		err := changeTask(getTaskParams(c))
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
 			c.String(http.StatusOK, "change task success.")
 		}
-	})
-
-	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "aaa")
 	})
 
 	_ = r.Run(":10003")
