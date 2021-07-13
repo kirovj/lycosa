@@ -1,20 +1,24 @@
 package lycosa
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // init prepare to start
 func init() {
 	// load config from config
-	LoadConfig()
+	loadConfig()
+
+	// Confirm bash by os
+	confirmBash()
 
 	// load tasks from Task and run
-	LoadTask()
+	loadTask()
 	for _, task := range Tasks {
 		if task.Valid {
-			RunTask(task)
+			runTask(task)
 		}
 	}
 }
@@ -33,13 +37,13 @@ func Start() {
 
 	// api for add task
 	r.POST("/add", func(c *gin.Context) {
-		AddTask(getTaskParams(c))
+		addTask(getTaskParams(c))
 		c.String(http.StatusOK, "add task success.")
 	})
 
 	// api for change task valid, valid -> invalid, invalid -> valid
 	r.POST("/valid", func(c *gin.Context) {
-		err := ChangeTaskValid(c.PostForm("name"))
+		err := changeTaskValid(c.PostForm("name"))
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {
@@ -49,7 +53,7 @@ func Start() {
 
 	// api for change task
 	r.POST("/change", func(c *gin.Context) {
-		err := ChangeTask(getTaskParams(c))
+		err := changeTask(getTaskParams(c))
 		if err != nil {
 			c.String(http.StatusNotFound, err.Error())
 		} else {

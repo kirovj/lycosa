@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"sync"
 )
@@ -48,7 +47,7 @@ func (t *Task) String() string {
 
 // LoadTask load tasks from task file
 // it only run once when service start
-func LoadTask() {
+func loadTask() {
 	var (
 		file   *os.File
 		err    error
@@ -84,11 +83,11 @@ func LoadTask() {
 }
 
 // AddTask add task from web api and then save to task file
-func AddTask(name, scheduling, command string) {
+func addTask(name, scheduling, command string) {
 	go saveTask(true, defaultTask(name, scheduling, command))
 }
 
-func ChangeTask(name, scheduling, command string) error {
+func changeTask(name, scheduling, command string) error {
 	for _, task := range Tasks {
 		if task.Name == name {
 			task.Scheduling = scheduling
@@ -100,7 +99,7 @@ func ChangeTask(name, scheduling, command string) error {
 	return errors.New(NotFound + name)
 }
 
-func ChangeTaskValid(name string) error {
+func changeTaskValid(name string) error {
 	for _, task := range Tasks {
 		if task.Name == name {
 			task.Valid = !task.Valid
@@ -152,22 +151,14 @@ func saveTask(isAppend bool, task *Task) {
 }
 
 // RunTask run bash cmd
-func RunTask(t *Task) {
+func runTask(t *Task) {
 	var (
-		cmd  *exec.Cmd
-		out  []byte
-		err  error
-		bash string
+		cmd *exec.Cmd
+		out []byte
+		err error
 	)
 
-	switch runtime.GOOS {
-	case "windows":
-		bash = BashWin
-	case "linux":
-		bash = BashLinux
-	}
-
-	cmd = exec.Command(bash, "-c", t.Command)
+	cmd = exec.Command(Bash, "-c", t.Command)
 	if out, err = cmd.CombinedOutput(); err != nil {
 		fmt.Println(err)
 		return

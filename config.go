@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"runtime"
 	"strings"
 )
 
@@ -21,7 +22,10 @@ type Config struct {
 	TaskFile string
 }
 
-var Conf = &Config{}
+var (
+	Conf = &Config{}
+	Bash string
+)
 
 func setField(v reflect.Value, kvStr string) {
 	kv := strings.Split(kvStr, "=")
@@ -30,7 +34,7 @@ func setField(v reflect.Value, kvStr string) {
 }
 
 // LoadConfig load config from file config
-func LoadConfig() {
+func loadConfig() {
 	var (
 		file   *os.File
 		line   []byte
@@ -60,5 +64,14 @@ func LoadConfig() {
 			return
 		}
 		setField(v, string(line))
+	}
+}
+
+func confirmBash() {
+	switch runtime.GOOS {
+	case "windows":
+		Bash = BashWin
+	case "linux":
+		Bash = BashLinux
 	}
 }

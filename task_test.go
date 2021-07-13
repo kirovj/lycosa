@@ -6,7 +6,7 @@ import (
 )
 
 func TestTask(t *testing.T) {
-	LoadTask()
+	loadTask()
 	for _, task := range Tasks {
 		fmt.Println(task)
 	}
