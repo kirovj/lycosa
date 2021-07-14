@@ -19,7 +19,19 @@ func init() {
 	loadTask()
 
 	// cron run
-	// go runCron()
+	go runCron()
+}
+
+func setCookie(c *gin.Context, k, v string) {
+	c.SetCookie(k, v, 86400*7, "", "", true, true)
+}
+
+func rmCookie(c *gin.Context, k string) {
+	c.SetCookie(k, "", 0, "", "", true, true)
+}
+
+func getTaskParams(c *gin.Context) (string, string, string) {
+	return c.PostForm("name"), c.PostForm("scheduling"), c.PostForm("command")
 }
 
 func Start() {
@@ -36,7 +48,7 @@ func Start() {
 		pass := c.PostForm("pass")
 		if user == Conf.User && pass == Conf.Pass {
 			sessionId = uuid.New()
-			c.SetCookie("user", sessionId, 86400*7, "", "", true, true)
+			setCookie(c, "user", sessionId)
 			c.String(http.StatusOK, "login success")
 		} else {
 			c.String(http.StatusOK, "failed, check user or password!")
@@ -46,13 +58,9 @@ func Start() {
 	admin := r.Group("/admin")
 	admin.Use(onlyAdmin())
 
-	var getTaskParams = func(c *gin.Context) (string, string, string) {
-		return c.PostForm("name"), c.PostForm("scheduling"), c.PostForm("command")
-	}
-
 	admin.GET("/logout", func(c *gin.Context) {
 		sessionId = ""
-		c.SetCookie("user", "", 0, "", "", true, true)
+		rmCookie(c, "user")
 		c.String(http.StatusOK, "log out.")
 	})
 
