@@ -44,7 +44,7 @@ func loadConfig() {
 		v      = reflect.ValueOf(Conf).Elem() // 反射获取Conf的指针
 	)
 
-	if file, err = os.Open("config"); err != nil {
+	if file, err = os.Open("config.ini"); err != nil {
 		fmt.Println(err)
 		return
 	}
