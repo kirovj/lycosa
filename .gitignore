@@ -4,6 +4,8 @@ logs/
 *.xlsx
 *.exe
 *.png
+task
+config
 ### IntelliJ IDEA ###
 .idea
 *.iws
