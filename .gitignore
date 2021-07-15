@@ -4,6 +4,7 @@ logs/
 *.xlsx
 *.exe
 *.png
+*.db
 task.txt
 config.ini
 ### IntelliJ IDEA ###
