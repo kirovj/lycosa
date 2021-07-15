@@ -1,7 +1,10 @@
 package lycosa
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestDb(t *testing.T) {
 	loadDB()
+
 }
