@@ -6,19 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var sessionId string
-
 func onlyAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if id := sessionInCookie(c); id != "" {
-			sessionId = id
-			c.Next()
+		if token := tokenInCookie(c); token != "" {
+			if _, err := getUserByToken(token); err != nil {
+				c.Next()
+			}
 		}
 		c.AbortWithStatus(http.StatusForbidden)
 	}
 }
 
-func sessionInCookie(c *gin.Context) string {
+func tokenInCookie(c *gin.Context) string {
 	s, _ := c.Cookie("user")
 	return s
 }

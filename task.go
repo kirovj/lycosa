@@ -33,7 +33,7 @@ func (t *Task) String() string {
 
 // getTasks get tasks from db
 // it only run once when service start
-func getTasks() ([]*Task, error) {
+func getTasks() (*[]*Task, error) {
 	rows, err := db.Query(`select * from task;`)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func getTasks() ([]*Task, error) {
 		tasks = append(tasks, task)
 		fmt.Println(task)
 	}
-	return tasks, nil
+	return &tasks, nil
 }
 
 // AddTask add task from web api and then save to db

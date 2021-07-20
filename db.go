@@ -29,27 +29,6 @@ func loadDB() {
 
 	// if db not exists, create tables when open db.
 	if create {
-		db.Exec(`
-CREATE TABLE task (
-	id     INTEGER PRIMARY KEY,
-	ctime  DATE,
-	mtime  DATE,
-	valid  BOOLEAN,
-	name   VARCHAR(255)    NOT NULL,
-	cron   CHAR(20) NOT NULL,
-	cmd    TEXT
-	);
-CREATE TABLE user (
-	id      INTEGER PRIMARY KEY,
-	ctime   DATE,
-	mtime   DATE,
-	valid   BOOLEAN,
-	name    CHAR(20) NOT NULL,
-	pass    CHAR(20) NOT NULL,
-	session CHAR(36)
-);
-INSERT INTO user
-(ctime, mtime, valid, name, pass)
-VALUES(datetime('now', 'localtime'), datetime('now', 'localtime'), 1, 'admin', 'admin');`)
+		db.Exec(CreateTables)
 	}
 }

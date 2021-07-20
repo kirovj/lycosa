@@ -15,7 +15,7 @@ func runCron() {
 	defer c.Stop()
 
 	tasks, _ := getTasks()
-	for _, t := range tasks {
+	for _, t := range *tasks {
 		if _, err = c.AddFunc(t.Cron, t.runTask); err != nil {
 			fmt.Println(err)
 			continue
