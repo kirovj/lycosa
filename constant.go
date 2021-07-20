@@ -40,6 +40,11 @@ VALUES(datetime('now', 'localtime'), datetime('now', 'localtime'), 1, 'admin', '
 values(datetime('now', 'localtime'), datetime('now', 'localtime'), 1, '%s', '%s', '%s');`
 	UpdateTaskSql      = `update task set name='%s', cron='%s', cmd='%s', mtime=datetime('now', 'localtime') where id = %d;`
 	UpdateTaskValidSql = `update task set valid=1, mtime=datetime('now', 'localtime') where id = %d;`
+
+	SelectAllUser     = `select id,ctime,mtime,valid,name,pass,ifnull(token,'') from user`
+	SelectUserByToken = `select id,ctime,mtime,valid,name,pass,ifnull(token,'') from user where token='%s'`
+	SelectUserByName  = `select id,ctime,mtime,valid,name,pass,ifnull(token,'') from user where name='%s'`
+	UpdateUserToken   = `update user set token='%s' where id=%d`
 )
 
 func init() {

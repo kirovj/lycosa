@@ -9,7 +9,7 @@ import (
 func onlyAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if token := tokenInCookie(c); token != "" {
-			if _, err := getUserByToken(token); err != nil {
+			if user := getUserByToken(token); user != nil {
 				c.Next()
 			}
 		}

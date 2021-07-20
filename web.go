@@ -11,7 +11,7 @@ import (
 func init() {
 	loadDB()
 
-	runCron()
+	go runCron()
 }
 
 func setCookie(c *gin.Context, k, v string) {
@@ -39,15 +39,14 @@ func Start() {
 	engine.POST("/login", func(c *gin.Context) {
 		name := c.PostForm("user")
 		pass := c.PostForm("pass")
-		if user, err := getUserByName(name); err != nil {
-			if user.Pass == pass {
-				token := uuid.New()
-				setCookie(c, "user", token)
-				updateToken(user, token)
-				c.String(http.StatusOK, "login success")
-			}
+		if user := getUserByName(name); user != nil && user.Pass == pass {
+			token := uuid.New()
+			setCookie(c, "user", token)
+			updateToken(user, token)
+			c.String(http.StatusOK, "login success")
+		} else {
+			c.String(http.StatusOK, "failed, check user or password!")
 		}
-		c.String(http.StatusOK, "failed, check user or password!")
 	})
 
 	admin := engine.Group("/admin")
@@ -58,7 +57,7 @@ func Start() {
 		c.String(http.StatusOK, "log out.")
 	})
 
-	admin.GET("/users", func(c *gin.Context) {
+	engine.GET("/users", func(c *gin.Context) {
 		users, _ := getUsers()
 		c.JSON(http.StatusOK, users)
 	})
