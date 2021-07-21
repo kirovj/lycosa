@@ -45,7 +45,7 @@ func Start() {
 			updateToken(user, token)
 			c.String(http.StatusOK, "login success")
 		} else {
-			c.String(http.StatusOK, "failed, check user or password!")
+			c.String(http.StatusForbidden, "failed, check user or password!")
 		}
 	})
 
@@ -57,7 +57,7 @@ func Start() {
 		c.String(http.StatusOK, "log out.")
 	})
 
-	engine.GET("/users", func(c *gin.Context) {
+	admin.GET("/users", func(c *gin.Context) {
 		users, _ := getUsers()
 		c.JSON(http.StatusOK, users)
 	})
